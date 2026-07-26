@@ -4,6 +4,6 @@ This repo is used to configure the [TangledWires status page](https://status.tan
 
 It is designed to be used with OpenTofu, and may use features not available in Terraform.
 
-## GitHub setup
+## Usage
 
-Create a new GitHub Actions secret called `uptime_api_token`, with the content being an API token created at [https://betterstack.com/settings/global-api-tokens](https://betterstack.com/settings/global-api-tokens).
+Copy `.auto.tfvars.example` to `.auto.tfvars` and fill it in, then run `tofu apply`.
