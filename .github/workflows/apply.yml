@@ -1,0 +1,53 @@
+name: Apply
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tofu-apply
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: opentofu/setup-opentofu@v2
+
+      - name: Create plan
+        id: plan
+        env:
+          TF_VAR_uptime_api_token: "${{ secrets.uptime_api_token }}"
+        run: tofu plan -detailed-exitcode -out=tfplan
+
+      - name: Upload plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: tfplan
+          retention-days: 1
+
+  apply:
+    needs: plan
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: opentofu/setup-opentofu@v2
+
+      - name: Download plan
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan
+
+      - name: Apply
+        env:
+          TF_VAR_uptime_api_token: "${{ secrets.uptime_api_token }}"
+        run: tofu apply -auto-approve tfplan
