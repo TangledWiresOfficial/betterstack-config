@@ -20,6 +20,9 @@ jobs:
 
       - uses: opentofu/setup-opentofu@v2
 
+      - name: Init OpenTofu
+        run: tofu init
+
       - name: Create plan
         id: plan
         env:
